@@ -1,445 +1,517 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Extigraf</title>
-    <meta name="theme-color" content="#ef4444">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = { theme:{ extend:{} } }
-    </script>
-    <link rel="preconnect" href="https://esm.sh">
-    <style>html,body{background:#fff}</style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module">
-      import React, {useEffect,useMemo,useState} from "https://esm.sh/react@18";
-      import {createRoot} from "https://esm.sh/react-dom@18/client";
-      import {motion, AnimatePresence, useScroll, useSpring} from "https://esm.sh/framer-motion@11";
-      import {
-        Flame, ShieldCheck, Wrench, PhoneCall, MapPin, Clock, BadgeCheck,
-        ShoppingCart, CheckCircle2, Truck, Star, ChevronDown, MessageCircle,
-        Menu, X
-      } from "https://esm.sh/lucide-react@0.471.0";
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Extigraf — Extintores e Serviços</title>
+  <meta name="theme-color" content="#ef4444">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','ui-sans-serif','system-ui']}}}}</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    html,body{background:#fff}
+    .glass{backdrop-filter:saturate(120%) blur(8px)}
+    .k{animation:float 6s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  </style>
+</head>
+<body class="antialiased text-gray-900">
+  <!-- Barra progresso scroll -->
+  <div id="progress" class="fixed left-0 top-0 z-50 h-1 w-full origin-left scale-x-0 bg-gradient-to-r from-rose-500 via-red-500 to-orange-400"></div>
 
-      const COMPANY = {
-        name: "Extigraf",
-        phoneDisplay: "(96) 9 9999-9999",
-        whatsapp: "5596999999999",
-        address: "Av. Exemplo, 123 - Macapá/AP",
-        email: "vendas@extigraf.com.br",
-      };
-      const whatsappUrl = (msg)=>`https://wa.me/${COMPANY.whatsapp}?text=${encodeURIComponent(msg)}`;
-      const container={hidden:{opacity:0,y:20},show:{opacity:1,y:0,transition:{staggerChildren:.06,duration:.5,ease:"easeOut"}}};
-      const item={hidden:{opacity:0,y:12},show:{opacity:1,y:0,transition:{duration:.5}}};
-
-      const ScrollProgress=()=>{ const {scrollYProgress}=useScroll(); const scaleX=useSpring(scrollYProgress,{stiffness:120,damping:30,mass:.2});
-        return <motion.div style={{scaleX,transformOrigin:"0% 50%"}} className="fixed left-0 top-0 z-[60] h-1 w-full bg-gradient-to-r from-rose-500 via-red-500 to-orange-400"/>;
-      };
-
-      function Header(){
-        const [open,setOpen]=useState(false);
-        useEffect(()=>{const onEsc=e=>e.key==="Escape"&&setOpen(false);window.addEventListener("keydown",onEsc);return()=>window.removeEventListener("keydown",onEsc)},[]);
-        const NAV=[{href:"#produtos",label:"Produtos"},{href:"#servicos",label:"Serviços"},{href:"#sobre",label:"Sobre"},{href:"#faq",label:"FAQ"},{href:"#contato",label:"Contato"}];
-        return (
-          <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/70 border-b border-black/5">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 items-center justify-between">
-                <a href="#" className="flex items-center gap-2 group">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-orange-500 text-white shadow-md shadow-rose-500/30 group-hover:scale-105 transition-transform">
-                    <Flame className="h-5 w-5"/>
-                  </span>
-                  <span className="font-extrabold tracking-tight text-xl">Extigraf</span>
-                </a>
-                <nav className="hidden md:flex items-center gap-6">
-                  {NAV.map(n=>(
-                    <a key={n.href} href={n.href} className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">{n.label}</a>
-                  ))}
-                  <a href={whatsappUrl("Olá! Quero comprar extintores com a Extigraf.")} target="_blank" rel="noreferrer"
-                     className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-rose-500/30 transition-all hover:shadow-xl hover:-translate-y-0.5">
-                    <ShoppingCart className="h-4 w-4"/> Comprar agora
-                  </a>
-                </nav>
-                <button className="md:hidden inline-flex items-center justify-center rounded-xl p-2 hover:bg-black/5" onClick={()=>setOpen(v=>!v)} aria-label="Abrir menu">
-                  {open ? <X className="h-6 w-6"/> : <Menu className="h-6 w-6"/>}
-                </button>
-              </div>
-              <AnimatePresence>
-                {open && (
-                  <motion.div initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} className="md:hidden pb-4">
-                    <div className="grid gap-2 rounded-2xl border border-black/5 bg-white p-3 shadow-sm">
-                      {NAV.map(n=>(
-                        <a key={n.href} href={n.href} onClick={()=>setOpen(false)} className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">{n.label}</a>
-                      ))}
-                      <a href={whatsappUrl("Olá! Quero comprar extintores com a Extigraf.")} target="_blank" rel="noreferrer"
-                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow">
-                        <ShoppingCart className="h-4 w-4"/> Comprar agora
-                      </a>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </header>
-        );
-      }
-
-      function Hero(){
-        return (
-          <section className="relative overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 -z-10">
-              <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-br from-rose-500/30 via-red-500/30 to-orange-400/30 blur-3xl"/>
-            </div>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-              <motion.div variants={container} initial="hidden" whileInView="show" viewport={{once:true,amount:.2}} className="grid items-center gap-10 md:grid-cols-2">
-                <motion.div variants={item}>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
-                    <BadgeCheck className="h-4 w-4"/> Selo Inmetro · Garantia Extigraf
-                  </div>
-                  <h1 className="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight text-gray-900 leading-tight">
-                    Extintores e serviços de <span className="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">prevenção contra incêndio</span>
-                  </h1>
-                  <p className="mt-4 text-gray-600 text-base sm:text-lg">
-                    Venda, recarga e manutenção com atendimento rápido em <b>Macapá/AP</b> e região. Equipamentos certificados, nota fiscal e suporte técnico especializado.
-                  </p>
-                  <div className="mt-6 flex flex-wrap items-center gap-3">
-                    <a href={whatsappUrl("Olá, quero um orçamento de extintores.")} target="_blank" rel="noreferrer"
-                       className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-5 py-3 text-white font-semibold shadow-lg shadow-rose-500/30 transition-all hover:-translate-y-0.5">
-                      <ShoppingCart className="h-5 w-5"/> Comprar Extintores
-                    </a>
-                    <a href="#contato" className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 font-semibold text-gray-800 hover:border-gray-300 hover:shadow-sm transition-all">
-                      <PhoneCall className="h-5 w-5"/> Falar com especialista
-                    </a>
-                  </div>
-                  <div className="mt-6 flex items-center gap-6 text-sm text-gray-600">
-                    <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4"/>Selo Inmetro</div>
-                    <div className="flex items-center gap-2"><Truck className="h-4 w-4"/>Entrega expressa</div>
-                    <div className="flex items-center gap-2"><BadgeCheck className="h-4 w-4"/>Garantia real</div>
-                  </div>
-                </motion.div>
-                <motion.div variants={item} className="relative">
-                  <div className="relative rounded-3xl border border-black/5 bg-white/80 p-4 shadow-2xl">
-                    <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <motion.div initial={{rotate:-8,y:10,opacity:0}} animate={{rotate:0,y:0,opacity:1}} transition={{type:"spring",stiffness:120,damping:14}} className="grid grid-cols-2 gap-4 p-8">
-                          {[
-                            {name:"Pó ABC 6kg",badge:"Mais vendido"},
-                            {name:"CO₂ 6kg",badge:"Elétricos"},
-                            {name:"AP 10L",badge:"Classe A"},
-                            {name:"Pó BC 4kg",badge:"Veicular"},
-                          ].map((p)=>(
-                            <motion.div key={p.name} whileHover={{y:-4}} className="relative rounded-2xl bg-white p-4 shadow-sm border border-black/5">
-                              <div className="flex items-start justify-between">
-                                <div><div className="text-sm font-semibold text-gray-900">{p.name}</div><div className="mt-1 text-xs text-gray-500">Selo Inmetro</div></div>
-                                <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">{p.badge}</span>
-                              </div>
-                              <div className="mt-3 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/10 to-orange-400/10">
-                                <Flame className="h-8 w-8 text-rose-500"/>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </motion.div>
-                      </div>
-                    </div>
-                    <div className="mt-4 grid grid-cols-3 gap-3 text-xs text-gray-600">
-                      {["Condomínios","Comércio","Indústrias","Veículos","Data Centers","Escolas"].map(t=>(
-                        <div key={t} className="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500"/> {t}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
-              <div className="mt-12 flex flex-col items-center text-gray-500">
-                <div className="text-xs uppercase tracking-widest">Clientes atendidos</div>
-                <div className="mt-3 grid grid-cols-2 gap-6 sm:grid-cols-4 md:grid-cols-6 opacity-70">
-                  {["AMBEV","Shopping X","Construtora Y","Hospital Z","SENAI","UFAP"].map(c=>(
-                    <div key={c} className="text-sm font-semibold">{c}</div>
-                  ))}
-                </div>
-                <ChevronDown className="mt-6 h-6 w-6 animate-bounce"/>
-              </div>
-            </div>
-          </section>
-        );
-      }
-
-      function Products(){
-        const products=useMemo(()=>[
-          {title:"Extintor Pó ABC 6kg",desc:"Multiuso: classes A, B e C. Ideal para comércios e condomínios.",price:"A partir de R$ 3xx"},
-          {title:"Extintor CO₂ 6kg",desc:"Indicado para equipamentos elétricos e eletrônicos.",price:"A partir de R$ 5xx"},
-          {title:"Extintor AP 10L",desc:"Água pressurizada para materiais sólidos (classe A).",price:"A partir de R$ 4xx"},
-          {title:"Extintor Pó BC 4kg",desc:"Veicular e ambientes com líquidos inflamáveis.",price:"A partir de R$ 2xx"},
-        ],[]);
-        return (
-          <section id="produtos" className="py-16 sm:py-24 bg-gradient-to-b from-white to-gray-50">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <motion.div initial="hidden" whileInView="show" viewport={{once:true,amount:.2}} variants={container} className="text-center">
-                <motion.h2 variants={item} className="text-2xl sm:text-4xl font-extrabold">
-                  Produtos com <span className="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">selo Inmetro</span>
-                </motion.h2>
-                <motion.p variants={item} className="mt-3 text-gray-600">Todos os extintores são novos, lacrados e acompanham NF-e.</motion.p>
-              </motion.div>
-              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {products.map(p=>(
-                  <motion.div key={p.title} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{duration:.5}} whileHover={{y:-6}} className="group relative rounded-3xl border border-black/5 bg-white p-5 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-bold text-gray-900">{p.title}</h3>
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Inmetro</span>
-                    </div>
-                    <div className="mt-3 h-28 rounded-2xl bg-gradient-to-br from-rose-500/10 via-red-500/10 to-orange-400/10 flex items-center justify-center">
-                      <Flame className="h-10 w-10 text-rose-600"/>
-                    </div>
-                    <p className="mt-3 text-sm text-gray-600">{p.desc}</p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="text-sm font-semibold text-gray-900">{p.price}</div>
-                      <a href={whatsappUrl(`Olá! Quero *${p.title}*.`)} target="_blank" rel="noreferrer"
-                         className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow">
-                        <ShoppingCart className="h-4 w-4"/> Solicitar
-                      </a>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-                <div className="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><ShieldCheck className="h-4 w-4 text-emerald-500"/>Garantia 12 meses</div>
-                <div className="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><Truck className="h-4 w-4 text-emerald-500"/>Entrega e instalação</div>
-                <div className="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><BadgeCheck className="h-4 w-4 text-emerald-500"/>NF-e e ART sob demanda</div>
-              </div>
-            </div>
-          </section>
-        );
-      }
-
-      const Services=()=>(
-        <section id="servicos" className="py-16 sm:py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div initial="hidden" whileInView="show" viewport={{once:true,amount:.2}} variants={container} className="text-center">
-              <motion.h2 variants={item} className="text-2xl sm:text-4xl font-extrabold">Serviços completos</motion.h2>
-              <motion.p variants={item} className="mt-3 text-gray-600">Tudo para deixar seu ambiente em conformidade e seguro.</motion.p>
-            </motion.div>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {[
-                {icon:Wrench,title:"Recarga e Manutenção",desc:"Recarga certificada, inspeções periódicas e testes hidrostáticos."},
-                {icon:ShieldCheck,title:"Projetos e Laudos",desc:"Consultoria, dimensionamento e documentos para AVCB/CLCB."},
-                {icon:Flame,title:"Sinalização e Acessórios",desc:"Placas fotoluminescentes, suportes, caixas e hidrantes."},
-              ].map(s=>{
-                const Icon=s.icon;
-                return (
-                  <motion.div key={s.title} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{duration:.5}} whileHover={{y:-6}} className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/15 to-orange-400/15 text-rose-600"><Icon className="h-5 w-5"/></div>
-                    <h3 className="mt-4 text-lg font-bold text-gray-900">{s.title}</h3>
-                    <p className="mt-2 text-sm text-gray-600">{s.desc}</p>
-                  </motion.div>
-                );
-              })}
-            </div>
-            <div className="mt-12 flex justify-center">
-              <a href={whatsappUrl("Olá! Preciso de serviços de prevenção contra incêndio.")} target="_blank" rel="noreferrer"
-                 className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-5 py-3 text-white font-semibold shadow-lg shadow-rose-500/30 transition-all hover:-translate-y-0.5">
-                <MessageCircle className="h-5 w-5"/> Solicitar orçamento
-              </a>
-            </div>
-          </div>
-        </section>
-      );
-
-      const Differentials=()=>(
-        <section className="py-14 bg-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                {Icon:Truck,title:"Entrega rápida",desc:"Logística ágil em Macapá e região."},
-                {Icon:ShieldCheck,title:"Certificação",desc:"Produtos com selo Inmetro e garantia."},
-                {Icon:BadgeCheck,title:"Conformidade",desc:"NF-e, ART e documentação quando aplicável."},
-                {Icon:Wrench,title:"Pós-venda",desc:"Suporte, inspeções e manutenção programada."},
-              ].map(({Icon,title,desc})=>(
-                <motion.div key={title} initial={{opacity:0,y:12}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} whileHover={{y:-4}} className="rounded-2xl border border-black/5 bg-gradient-to-br from-gray-50 to-white p-5 shadow-sm">
-                  <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-rose-500/15 to-orange-400/15 text-rose-600"><Icon className="h-5 w-5"/></div>
-                  <div className="mt-2 font-semibold">{title}</div>
-                  <div className="text-sm text-gray-600">{desc}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      );
-
-      const Steps=()=>(
-        <section id="sobre" className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-2xl sm:text-4xl font-extrabold">Como funciona</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-4">
-              {[
-                {t:"Contato",d:"Chame no WhatsApp e informe sua necessidade."},
-                {t:"Dimensionamento",d:"Indicamos os modelos e quantidades corretas."},
-                {t:"Entrega/Instalação",d:"Levamos ao local e instalamos quando necessário."},
-                {t:"Pós-venda",d:"Acompanhamento, recargas e inspeções periódicas."},
-              ].map((s,i)=>(
-                <motion.div key={s.t} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{delay:i*.05}} className="relative rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
-                  <div className="absolute -top-3 left-5 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gray-900 text-white text-sm font-bold shadow">{i+1}</div>
-                  <div className="mt-2 text-lg font-bold">{s.t}</div>
-                  <div className="text-sm text-gray-600">{s.d}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      );
-
-      const Testimonials=()=>(
-        <section className="py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-2xl sm:text-4xl font-extrabold">Depoimentos</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {[
-                {name:"Condomínio Jardim Sul",text:"Entrega rápida e suporte impecável. Regularizamos todo o prédio em poucos dias!"},
-                {name:"Loja Centro AP",text:"Produtos novos, lacrados e com NF. Voltarei a comprar."},
-                {name:"Indústria Norte",text:"Equipe técnica muito atenciosa, recomendação certeira de modelos."},
-              ].map(t=>(
-                <motion.figure key={t.name} initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
-                  <div className="flex gap-1 text-amber-500">{Array.from({length:5}).map((_,i)=><Star key={i} className="h-4 w-4 fill-current"/>)}</div>
-                  <blockquote className="mt-3 text-sm text-gray-700">“{t.text}”</blockquote>
-                  <figcaption className="mt-3 text-sm font-semibold">{t.name}</figcaption>
-                </motion.figure>
-              ))}
-            </div>
-          </div>
-        </section>
-      );
-
-      function FAQ(){
-        const qs=[
-          {q:"Qual o extintor ideal para minha empresa?",a:"Depende da classe de risco. Em geral, Pó ABC cobre a maioria das necessidades. Para elétricos, CO₂ é recomendado."},
-          {q:"Vocês fazem recarga?",a:"Sim. Realizamos recarga certificada, inspeções e testes hidrostáticos conforme norma."},
-          {q:"Entregam e instalam?",a:"Sim. Atendemos Macapá/AP e região com equipe própria e parceiros."},
-          {q:"Emitem NF e laudos?",a:"Emitimos NF-e e, quando aplicável, ART/laudos com profissionais habilitados."},
-        ];
-        const [open,setOpen]=useState(0);
-        return (
-          <section id="faq" className="py-16 sm:py-24 bg-gradient-to-b from-white to-gray-50">
-            <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-              <h2 className="text-center text-2xl sm:text-4xl font-extrabold">FAQ</h2>
-              <div className="mt-8 divide-y divide-black/5 rounded-2xl border border-black/5 bg-white">
-                {qs.map((f,i)=>(
-                  <div key={f.q} className="p-4 sm:p-6">
-                    <button onClick={()=>setOpen(v=>v===i?null:i)} className="flex w-full items-center justify-between gap-4 text-left">
-                      <span className="text-sm sm:text-base font-semibold">{f.q}</span>
-                      <ChevronDown className={`h-5 w-5 transition-transform ${open===i?"rotate-180":""}`}/>
-                    </button>
-                    <AnimatePresence initial={false}>
-                      {open===i && (
-                        <motion.p initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} transition={{duration:.25}} className="overflow-hidden pt-2 text-sm text-gray-600">
-                          {f.a}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        );
-      }
-
-      const Contact=()=>(
-        <section id="contato" className="py-16 sm:py-24">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold">Fale com a {COMPANY.name}</h3>
-                <div className="mt-4 grid gap-3 text-sm text-gray-700">
-                  <div className="flex items-center gap-2"><PhoneCall className="h-4 w-4"/> {COMPANY.phoneDisplay}</div>
-                  <div className="flex items-center gap-2"><MessageCircle className="h-4 w-4"/> WhatsApp: {COMPANY.phoneDisplay}</div>
-                  <div className="flex items-center gap-2"><MapPin className="h-4 w-4"/> {COMPANY.address}</div>
-                  <div className="flex items-center gap-2"><Clock className="h-4 w-4"/> Seg–Sex, 8h–18h</div>
-                </div>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a href={whatsappUrl("Olá Extigraf! Preciso de orçamento.")} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-5 py-3 text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5">
-                    <MessageCircle className="h-5 w-5"/> Chamar no WhatsApp
-                  </a>
-                  <a href={`mailto:${COMPANY.email}`} className="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 font-semibold text-gray-800 hover:border-gray-300 hover:shadow-sm transition-all">
-                    Enviar e-mail
-                  </a>
-                </div>
-              </div>
-              <form onSubmit={(e)=>e.preventDefault()} className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold">Solicite um orçamento</h3>
-                <div className="mt-4 grid gap-4">
-                  <div className="grid gap-1">
-                    <label className="text-sm font-medium">Nome</label>
-                    <input className="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="Seu nome" required />
-                  </div>
-                  <div className="grid gap-1">
-                    <label className="text-sm font-medium">WhatsApp</label>
-                    <input className="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="(xx) x xxxx-xxxx" required />
-                  </div>
-                  <div className="grid gap-1">
-                    <label className="text-sm font-medium">Mensagem</label>
-                    <textarea rows="4" className="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="Ex.: Preciso de 10 extintores ABC 6kg e 2 CO₂ 6kg"></textarea>
-                  </div>
-                  <button type="submit" className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gray-900 px-5 py-3 font-semibold text-white shadow hover:-translate-y-0.5 transition-all">
-                    <ShoppingCart className="h-5 w-5"/> Enviar (demo)
-                  </button>
-                  <p className="text-xs text-gray-500">* Formulário demonstrativo. Para atendimento imediato, use o WhatsApp.</p>
-                </div>
-              </form>
-            </div>
-          </div>
-        </section>
-      );
-
-      const Footer=()=>(
-        <footer className="border-t border-black/5 bg-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex flex-col items-center gap-3 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-orange-500 text-white"><Flame className="h-4 w-4"/></span>
-                <span className="font-extrabold text-gray-900">Extigraf</span>
-              </div>
-              <div>© ${new Date().getFullYear()} Extigraf · Todos os direitos reservados.</div>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <a href="#produtos" className="hover:text-gray-900">Produtos</a>
-                <a href="#servicos" className="hover:text-gray-900">Serviços</a>
-                <a href="#faq" className="hover:text-gray-900">FAQ</a>
-                <a href="#contato" className="hover:text-gray-900">Contato</a>
-              </div>
-            </div>
-          </div>
-        </footer>
-      );
-
-      const FloatingWhatsApp=()=>(
-        <a href={whatsappUrl("Olá! Tenho uma dúvida sobre extintores.")} target="_blank" rel="noreferrer"
-           className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-5 py-3 text-white font-semibold shadow-xl transition-all hover:shadow-2xl hover:-translate-y-0.5">
-          <MessageCircle className="h-5 w-5"/> WhatsApp
+  <!-- Header -->
+  <header class="sticky top-0 z-40 border-b border-black/5 bg-white/80 glass">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <a href="#" class="flex items-center gap-2 group">
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-orange-500 text-white shadow-md group-hover:scale-105 transition-transform">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+          </span>
+          <span class="font-extrabold tracking-tight text-xl">Extigraf</span>
         </a>
-      );
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+          <a href="#produtos" class="hover:text-gray-950 transition-colors">Produtos</a>
+          <a href="#servicos" class="hover:text-gray-950 transition-colors">Serviços</a>
+          <a href="#sobre" class="hover:text-gray-950 transition-colors">Sobre</a>
+          <a href="#faq" class="hover:text-gray-950 transition-colors">FAQ</a>
+          <a href="#contato" class="hover:text-gray-950 transition-colors">Contato</a>
+          <a id="ctaTop" href="#" class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-4 py-2 text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl">
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i> Comprar agora
+          </a>
+        </nav>
+        <button id="menuBtn" class="md:hidden inline-flex items-center justify-center rounded-xl p-2 hover:bg-black/5" aria-label="Abrir menu">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+      <div id="mobileMenu" class="md:hidden hidden pb-4">
+        <div class="grid gap-2 rounded-2xl border border-black/5 bg-white p-3 shadow-sm">
+          <a href="#produtos" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">Produtos</a>
+          <a href="#servicos" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">Serviços</a>
+          <a href="#sobre" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">Sobre</a>
+          <a href="#faq" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">FAQ</a>
+          <a href="#contato" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5">Contato</a>
+          <a id="ctaTopM" href="#" class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-4 py-2 text-sm font-semibold text-white shadow">
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i> Comprar agora
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-      function App(){
-        useEffect(()=>{document.documentElement.style.scrollBehavior="smooth"; return()=>{document.documentElement.style.scrollBehavior="auto"}},[]);
-        return (
-          <div className="min-h-screen bg-white text-gray-900 antialiased">
-            <ScrollProgress/>
-            <Header/>
-            <Hero/>
-            <Products/>
-            <Services/>
-            <Differentials/>
-            <Steps/>
-            <Testimonials/>
-            <FAQ/>
-            <Contact/>
-            <Footer/>
-            <FloatingWhatsApp/>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 -z-10">
+      <div class="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-br from-rose-500/30 via-red-500/30 to-orange-400/30 blur-3xl"></div>
+    </div>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <div class="grid items-center gap-10 md:grid-cols-2">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+            <i data-lucide="badge-check" class="w-4 h-4"></i> Selo Inmetro · Garantia Extigraf
           </div>
-        );
-      }
+          <h1 class="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+            Extintores e serviços de <span class="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">prevenção contra incêndio</span>
+          </h1>
+          <p class="mt-4 text-gray-600 text-base sm:text-lg">
+            Venda, recarga e manutenção com atendimento rápido em <b>Macapá/AP</b> e região.
+            Equipamentos certificados, nota fiscal e suporte técnico especializado.
+          </p>
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <a id="ctaHero" href="#" class="k inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-5 py-3 text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5">
+              <i data-lucide="shopping-cart" class="w-5 h-5"></i> Comprar Extintores
+            </a>
+            <a href="#contato" class="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 font-semibold hover:border-gray-300 hover:shadow-sm transition-all">
+              <i data-lucide="phone-call" class="w-5 h-5"></i> Falar com especialista
+            </a>
+          </div>
+          <div class="mt-6 flex items-center gap-6 text-sm text-gray-600">
+            <div class="flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i>Selo Inmetro</div>
+            <div class="flex items-center gap-2"><i data-lucide="truck" class="w-4 h-4"></i>Entrega expressa</div>
+            <div class="flex items-center gap-2"><i data-lucide="badge-check" class="w-4 h-4"></i>Garantia real</div>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="relative rounded-3xl border border-black/5 bg-white/80 p-4 shadow-2xl">
+            <div class="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100">
+              <div class="grid grid-cols-2 gap-4 p-6">
+                <!-- Cards -->
+                <div class="group rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-transform hover:-translate-y-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Pó ABC 6kg</div>
+                      <div class="mt-1 text-xs text-gray-500">Selo Inmetro</div>
+                    </div>
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">Mais vendido</span>
+                  </div>
+                  <div class="mt-3 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/10 to-orange-400/10">
+                    <i data-lucide="flame" class="w-8 h-8 text-rose-600"></i>
+                  </div>
+                </div>
+                <div class="group rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-transform hover:-translate-y-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">CO₂ 6kg</div>
+                      <div class="mt-1 text-xs text-gray-500">Selo Inmetro</div>
+                    </div>
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">Elétricos</span>
+                  </div>
+                  <div class="mt-3 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/10 to-orange-400/10">
+                    <i data-lucide="flame" class="w-8 h-8 text-rose-600"></i>
+                  </div>
+                </div>
+                <div class="group rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-transform hover:-translate-y-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">AP 10L</div>
+                      <div class="mt-1 text-xs text-gray-500">Selo Inmetro</div>
+                    </div>
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">Classe A</span>
+                  </div>
+                  <div class="mt-3 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/10 to-orange-400/10">
+                    <i data-lucide="flame" class="w-8 h-8 text-rose-600"></i>
+                  </div>
+                </div>
+                <div class="group rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-transform hover:-translate-y-1">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <div class="text-sm font-semibold">Pó BC 4kg</div>
+                      <div class="mt-1 text-xs text-gray-500">Selo Inmetro</div>
+                    </div>
+                    <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-600 border border-rose-200">Veicular</span>
+                  </div>
+                  <div class="mt-3 flex h-16 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/10 to-orange-400/10">
+                    <i data-lucide="flame" class="w-8 h-8 text-rose-600"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-xs text-gray-600">
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Condomínios</div>
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Comércio</div>
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Indústrias</div>
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Veículos</div>
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Data Centers</div>
+              <div class="flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2 shadow-sm"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>Escolas</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      createRoot(document.getElementById("root")).render(<App/>);
-    </script>
-  </body>
+      <div class="mt-12 flex flex-col items-center text-gray-500">
+        <div class="text-xs uppercase tracking-widest">Clientes atendidos</div>
+        <div class="mt-3 grid grid-cols-2 gap-6 sm:grid-cols-4 md:grid-cols-6 opacity-70">
+          <div class="text-sm font-semibold">AMBEV</div>
+          <div class="text-sm font-semibold">Shopping X</div>
+          <div class="text-sm font-semibold">Construtora Y</div>
+          <div class="text-sm font-semibold">Hospital Z</div>
+          <div class="text-sm font-semibold">SENAI</div>
+          <div class="text-sm font-semibold">UFAP</div>
+        </div>
+        <i data-lucide="chevron-down" class="mt-6 h-6 w-6 animate-bounce"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produtos -->
+  <section id="produtos" class="py-16 sm:py-24 bg-gradient-to-b from-white to-gray-50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-4xl font-extrabold">Produtos com <span class="bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">selo Inmetro</span></h2>
+      <p class="mt-3 text-gray-600">Todos os extintores são novos, lacrados e acompanham NF-e.</p>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Card template repeated -->
+        <div class="group relative rounded-3xl border border-black/5 bg-white p-5 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold">Extintor Pó ABC 6kg</h3>
+            <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Inmetro</span>
+          </div>
+          <div class="mt-3 h-28 rounded-2xl bg-gradient-to-br from-rose-500/10 via-red-500/10 to-orange-400/10 flex items-center justify-center">
+            <i data-lucide="flame" class="w-10 h-10 text-rose-600"></i>
+          </div>
+          <p class="mt-3 text-sm text-gray-600">Multiuso: classes A, B e C. Ideal para comércios e condomínios.</p>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="text-sm font-semibold">A partir de R$ 3xx</div>
+            <a id="p1" href="#" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Solicitar
+            </a>
+          </div>
+        </div>
+
+        <div class="group relative rounded-3xl border border-black/5 bg-white p-5 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold">Extintor CO₂ 6kg</h3>
+            <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Inmetro</span>
+          </div>
+          <div class="mt-3 h-28 rounded-2xl bg-gradient-to-br from-rose-500/10 via-red-500/10 to-orange-400/10 flex items-center justify-center">
+            <i data-lucide="flame" class="w-10 h-10 text-rose-600"></i>
+          </div>
+          <p class="mt-3 text-sm text-gray-600">Indicado para equipamentos elétricos e eletrônicos.</p>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="text-sm font-semibold">A partir de R$ 5xx</div>
+            <a id="p2" href="#" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Solicitar
+            </a>
+          </div>
+        </div>
+
+        <div class="group relative rounded-3xl border border-black/5 bg-white p-5 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold">Extintor AP 10L</h3>
+            <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Inmetro</span>
+          </div>
+          <div class="mt-3 h-28 rounded-2xl bg-gradient-to-br from-rose-500/10 via-red-500/10 to-orange-400/10 flex items-center justify-center">
+            <i data-lucide="flame" class="w-10 h-10 text-rose-600"></i>
+          </div>
+          <p class="mt-3 text-sm text-gray-600">Água pressurizada para materiais sólidos (classe A).</p>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="text-sm font-semibold">A partir de R$ 4xx</div>
+            <a id="p3" href="#" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Solicitar
+            </a>
+          </div>
+        </div>
+
+        <div class="group relative rounded-3xl border border-black/5 bg-white p-5 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold">Extintor Pó BC 4kg</h3>
+            <span class="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Inmetro</span>
+          </div>
+          <div class="mt-3 h-28 rounded-2xl bg-gradient-to-br from-rose-500/10 via-red-500/10 to-orange-400/10 flex items-center justify-center">
+            <i data-lucide="flame" class="w-10 h-10 text-rose-600"></i>
+          </div>
+          <p class="mt-3 text-sm text-gray-600">Veicular e ambientes com líquidos inflamáveis.</p>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="text-sm font-semibold">A partir de R$ 2xx</div>
+            <a id="p4" href="#" class="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Solicitar
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
+        <div class="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>Garantia 12 meses</div>
+        <div class="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><i data-lucide="truck" class="w-4 h-4 text-emerald-500"></i>Entrega e instalação</div>
+        <div class="inline-flex items-center gap-2 rounded-xl border border-black/5 bg-white px-3 py-2"><i data-lucide="badge-check" class="w-4 h-4 text-emerald-500"></i>NF-e e ART sob demanda</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Serviços -->
+  <section id="servicos" class="py-16 sm:py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-4xl font-extrabold">Serviços completos</h2>
+      <p class="mt-3 text-gray-600">Tudo para deixar seu ambiente em conformidade e seguro.</p>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <div class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/15 to-orange-400/15 text-rose-600">
+            <i data-lucide="wrench" class="w-5 h-5"></i>
+          </div>
+          <h3 class="mt-4 text-lg font-bold">Recarga e Manutenção</h3>
+          <p class="mt-2 text-sm text-gray-600">Recarga certificada, inspeções periódicas e testes hidrostáticos.</p>
+        </div>
+
+        <div class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/15 to-orange-400/15 text-rose-600">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <h3 class="mt-4 text-lg font-bold">Projetos e Laudos</h3>
+          <p class="mt-2 text-sm text-gray-600">Consultoria, dimensionamento e documentos para AVCB/CLCB.</p>
+        </div>
+
+        <div class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm transition-transform hover:-translate-y-1">
+          <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500/15 to-orange-400/15 text-rose-600">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+          </div>
+          <h3 class="mt-4 text-lg font-bold">Sinalização e Acessórios</h3>
+          <p class="mt-2 text-sm text-gray-600">Placas fotoluminescentes, suportes, caixas e hidrantes.</p>
+        </div>
+      </div>
+
+      <div class="mt-12 flex justify-center">
+        <a id="ctaServ" href="#" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-orange-500 px-5 py-3 text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5">
+          <i data-lucide="message-circle" class="w-5 h-5"></i> Solicitar orçamento
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre (etapas) -->
+  <section id="sobre" class="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-center text-2xl sm:text-4xl font-extrabold">Como funciona</h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-4">
+        <!-- Step -->
+        <div class="relative rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="absolute -top-3 left-5 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gray-900 text-white text-sm font-bold shadow">1</div>
+          <div class="mt-2 text-lg font-bold">Contato</div>
+          <div class="text-sm text-gray-600">Chame no WhatsApp e informe sua necessidade.</div>
+        </div>
+        <div class="relative rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="absolute -top-3 left-5 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gray-900 text-white text-sm font-bold shadow">2</div>
+          <div class="mt-2 text-lg font-bold">Dimensionamento</div>
+          <div class="text-sm text-gray-600">Indicamos os modelos e quantidades corretas.</div>
+        </div>
+        <div class="relative rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="absolute -top-3 left-5 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gray-900 text-white text-sm font-bold shadow">3</div>
+          <div class="mt-2 text-lg font-bold">Entrega/Instalação</div>
+          <div class="text-sm text-gray-600">Levamos ao local e instalamos quando necessário.</div>
+        </div>
+        <div class="relative rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="absolute -top-3 left-5 inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gray-900 text-white text-sm font-bold shadow">4</div>
+          <div class="mt-2 text-lg font-bold">Pós-venda</div>
+          <div class="text-sm text-gray-600">Acompanhamento, recargas e inspeções periódicas.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Depoimentos -->
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-center text-2xl sm:text-4xl font-extrabold">Depoimentos</h2>
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <figure class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="flex gap-1 text-amber-500">
+            <i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i>
+          </div>
+          <blockquote class="mt-3 text-sm text-gray-700">“Entrega rápida e suporte impecável. Regularizamos todo o prédio em poucos dias!”</blockquote>
+          <figcaption class="mt-3 text-sm font-semibold">Condomínio Jardim Sul</figcaption>
+        </figure>
+        <figure class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="flex gap-1 text-amber-500">
+            <i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i>
+          </div>
+          <blockquote class="mt-3 text-sm text-gray-700">“Produtos novos, lacrados e com NF. Voltarei a comprar.”</blockquote>
+          <figcaption class="mt-3 text-sm font-semibold">Loja Centro AP</figcaption>
+        </figure>
+        <figure class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <div class="flex gap-1 text-amber-500">
+            <i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i><i data-lucide="star" class="w-4 h-4 fill-current"></i>
+          </div>
+          <blockquote class="mt-3 text-sm text-gray-700">“Equipe técnica muito atenciosa, recomendação certeira de modelos.”</blockquote>
+          <figcaption class="mt-3 text-sm font-semibold">Indústria Norte</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16 sm:py-24 bg-gradient-to-b from-white to-gray-50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-center text-2xl sm:text-4xl font-extrabold">FAQ</h2>
+      <div class="mt-8 divide-y divide-black/5 rounded-2xl border border-black/5 bg-white">
+        <details class="p-4 sm:p-6 group">
+          <summary class="cursor-pointer text-sm sm:text-base font-semibold flex items-center justify-between">
+            Qual o extintor ideal para minha empresa?
+            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+          </summary>
+          <p class="pt-2 text-sm text-gray-600">Depende da classe de risco. Em geral, Pó ABC cobre a maioria das necessidades. Para elétricos, CO₂ é recomendado.</p>
+        </details>
+        <details class="p-4 sm:p-6 group">
+          <summary class="cursor-pointer text-sm sm:text-base font-semibold flex items-center justify-between">
+            Vocês fazem recarga?
+            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+          </summary>
+          <p class="pt-2 text-sm text-gray-600">Sim. Realizamos recarga certificada, inspeções e testes hidrostáticos conforme norma.</p>
+        </details>
+        <details class="p-4 sm:p-6 group">
+          <summary class="cursor-pointer text-sm sm:text-base font-semibold flex items-center justify-between">
+            Entregam e instalam?
+            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+          </summary>
+          <p class="pt-2 text-sm text-gray-600">Sim. Atendemos Macapá/AP e região com equipe própria e parceiros.</p>
+        </details>
+        <details class="p-4 sm:p-6 group">
+          <summary class="cursor-pointer text-sm sm:text-base font-semibold flex items-center justify-between">
+            Emitem NF e laudos?
+            <i data-lucide="chevron-down" class="w-5 h-5 transition-transform group-open:rotate-180"></i>
+          </summary>
+          <p class="pt-2 text-sm text-gray-600">Emitimos NF-e e, quando aplicável, ART/laudos com profissionais habilitados.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato -->
+  <section id="contato" class="py-16 sm:py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+          <h3 class="text-lg font-bold">Fale com a Extigraf</h3>
+          <div class="mt-4 grid gap-3 text-sm">
+            <div class="flex items-center gap-2"><i data-lucide="phone-call" class="w-4 h-4"></i> <span id="phoneDisplay">(96) 9 9999-9999</span></div>
+            <div class="flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp: <span id="waDisplay">(96) 9 9999-9999</span></div>
+            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> <span id="address">Av. Exemplo, 123 - Macapá/AP</span></div>
+            <div class="flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Seg–Sex, 8h–18h</div>
+          </div>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a id="ctaWa" href="#" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 px-5 py-3 text-white font-semibold shadow-lg transition-all hover:-translate-y-0.5">
+              <i data-lucide="message-circle" class="w-5 h-5"></i> Chamar no WhatsApp
+            </a>
+            <a id="ctaMail" href="#" class="inline-flex items-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 font-semibold hover:border-gray-300 hover:shadow-sm transition-all">
+              Enviar e-mail
+            </a>
+          </div>
+        </div>
+
+        <form class="rounded-3xl border border-black/5 bg-white p-6 shadow-sm" onsubmit="event.preventDefault()">
+          <h3 class="text-lg font-bold">Solicite um orçamento</h3>
+          <div class="mt-4 grid gap-4">
+            <div class="grid gap-1">
+              <label class="text-sm font-medium">Nome</label>
+              <input class="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="Seu nome" required>
+            </div>
+            <div class="grid gap-1">
+              <label class="text-sm font-medium">WhatsApp</label>
+              <input class="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="(xx) x xxxx-xxxx" required>
+            </div>
+            <div class="grid gap-1">
+              <label class="text-sm font-medium">Mensagem</label>
+              <textarea rows="4" class="rounded-xl border border-black/10 px-4 py-3 outline-none focus:ring-2 focus:ring-rose-500" placeholder="Ex.: Preciso de 10 extintores ABC 6kg e 2 CO₂ 6kg"></textarea>
+            </div>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gray-900 px-5 py-3 font-semibold text-white shadow transition-all hover:-translate-y-0.5">
+              <i data-lucide="shopping-cart" class="w-5 h-5"></i> Enviar (demo)
+            </button>
+            <p class="text-xs text-gray-500">* Formulário demonstrativo. Para atendimento imediato, use o WhatsApp.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-black/5 bg-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col items-center gap-3 text-sm text-gray-600">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-rose-600 to-orange-500 text-white"><i data-lucide="flame" class="w-4 h-4"></i></span>
+          <span class="font-extrabold text-gray-900">Extigraf</span>
+        </div>
+        <div>© <span id="year"></span> Extigraf · Todos os direitos reservados.</div>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="#produtos" class="hover:text-gray-900">Produtos</a>
+          <a href="#servicos" class="hover:text-gray-900">Serviços</a>
+          <a href="#faq" class="hover:text-gray-900">FAQ</a>
+          <a href="#contato" class="hover:text-gray-900">Contato</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botão flutuante WhatsApp -->
+  <a id="waFloat" href="#" class="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-5 py-3 text-white font-semibold shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl">
+    <i data-lucide="message-circle" class="w-5 h-5"></i> WhatsApp
+  </a>
+
+  <script>
+    // Config da empresa — edite aqui
+    const COMPANY = {
+      name: "Extigraf",
+      phoneDisplay: "(96) 9 9999-9999",
+      whatsapp: "5596999999999", // DDI+DDD+numero
+      address: "Av. Exemplo, 123 - Macapá/AP",
+      email: "vendas@extigraf.com.br",
+    };
+    const wa = (msg) => `https://wa.me/${COMPANY.whatsapp}?text=${encodeURIComponent(msg)}`;
+
+    // Preenche contatos
+    document.getElementById("phoneDisplay").textContent = COMPANY.phoneDisplay;
+    document.getElementById("waDisplay").textContent = COMPANY.phoneDisplay;
+    document.getElementById("address").textContent = COMPANY.address;
+    document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("ctaTop").href = wa("Olá! Quero comprar extintores com a Extigraf.");
+    document.getElementById("ctaTopM").href = wa("Olá! Quero comprar extintores com a Extigraf.");
+    document.getElementById("ctaHero").href = wa("Olá, quero um orçamento de extintores.");
+    document.getElementById("ctaServ").href = wa("Olá! Preciso de serviços de prevenção contra incêndio.");
+    document.getElementById("p1").href = wa("Olá! Quero Extintor Pó ABC 6kg.");
+    document.getElementById("p2").href = wa("Olá! Quero Extintor CO₂ 6kg.");
+    document.getElementById("p3").href = wa("Olá! Quero Extintor AP 10L.");
+    document.getElementById("p4").href = wa("Olá! Quero Extintor Pó BC 4kg.");
+    document.getElementById("ctaWa").href = wa("Olá Extigraf! Preciso de orçamento.");
+    document.getElementById("waFloat").href = wa("Olá! Tenho uma dúvida sobre extintores.");
+    document.getElementById("ctaMail").href = `mailto:${COMPANY.email}`;
+
+    // Menu mobile
+    const btn = document.getElementById("menuBtn");
+    const menu = document.getElementById("mobileMenu");
+    btn.addEventListener("click", () => menu.classList.toggle("hidden"));
+
+    // Barra de progresso do scroll
+    const progress = document.getElementById("progress");
+    const onScroll = () => {
+      const h = document.documentElement;
+      const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+      progress.style.transform = `scaleX(${scrolled})`;
+    };
+    document.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // Inicializa ícones
+    lucide.createIcons();
+  </script>
+</body>
 </html>
